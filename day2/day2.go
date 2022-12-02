@@ -8,13 +8,18 @@ import (
 )
 
 var pointMap map[rune]int
-var winningMove map[rune]rune
+var winningMove, losingMove map[rune]rune
 
 func main() {
 	winningMove = map[rune]rune{
 		'A': 'Y',
 		'B': 'Z',
 		'C': 'X',
+	}
+	losingMove = map[rune]rune{
+		'A': 'Z',
+		'B': 'X',
+		'C': 'Y',
 	}
 	pointMap = map[rune]int{
 		'A': 1,
@@ -31,14 +36,17 @@ func main() {
 	}
 	defer file.Close()
 
-	var totalScore int
+	var totalScoreStrategy1, totalScoreStrategy2 int
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		totalScore += calculateRoundScore(rune(line[0]), rune(line[2]))
+		totalScoreStrategy1 += calculateRoundScore(rune(line[0]), rune(line[2]))
+		myMove := chooseMoveForStrategy2(rune(line[0]), rune(line[2]))
+		totalScoreStrategy2 += calculateRoundScore(rune(line[0]), myMove)
 	}
 
-	fmt.Println(totalScore)
+	fmt.Printf("Strategy 1: %d\n", totalScoreStrategy1)
+	fmt.Printf("Strategy 2: %d\n", totalScoreStrategy2)
 }
 
 func calculateRoundScore(opponentMove rune, myMove rune) int {
@@ -51,4 +59,17 @@ func calculateRoundScore(opponentMove rune, myMove rune) int {
 	}
 
 	return score
+}
+
+func chooseMoveForStrategy2(opponentMove rune, myGoal rune) rune {
+	if myGoal == 'X' {
+		return losingMove[opponentMove]
+	}
+	if myGoal == 'Y' {
+		return opponentMove
+	}
+	if myGoal == 'Z' {
+		return winningMove[opponentMove]
+	}
+	return ' '
 }
