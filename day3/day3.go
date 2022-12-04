@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	file, err := os.Open("/Users/cu/Repositories/advent-of-code-2022/day3/input.txt")
+	file, err := os.Open("input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -27,7 +27,7 @@ func main() {
 		rucksack := scanner.Text()
 
 		// Part 1
-		comp1, comp2 := seperateIntoCompartments(rucksack)
+		comp1, comp2 := separateIntoCompartments(rucksack)
 		for _, r := range comp1[:] {
 			if strings.ContainsRune(comp2, r) {
 				sumPart1 += priority(r)
@@ -56,7 +56,7 @@ func main() {
 
 }
 
-func seperateIntoCompartments(rucksack string) (string, string) {
+func separateIntoCompartments(rucksack string) (string, string) {
 	size := len(rucksack) / 2
 
 	return rucksack[:size], rucksack[size:]
@@ -75,7 +75,7 @@ func findBadge(rucksacks []string) rune {
 		}
 	}
 	for _, r2 := range candidates {
-		if strings.ContainsRune(string(rucksacks[2]), r2) {
+		if strings.ContainsRune(rucksacks[2], r2) {
 			return r2
 		}
 	}
