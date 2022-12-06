@@ -21,21 +21,26 @@ func main() {
 		stream = scanner.Text()
 	}
 
-	buffer := ""
+	fmt.Printf("Start of Packet:%d\n", getMarker(stream, 4))
+	fmt.Printf("Start of Message:%d\n", getMarker(stream, 14))
+}
+
+func getMarker(stream string, size int) int {
+	var buffer string
 	var marker int
 	for _, r := range stream[:] {
-		if len(buffer) < 4 {
+		if len(buffer) < size {
 			buffer += string(r)
 		} else {
 			if isMarker(buffer) {
-				fmt.Println(marker)
-				break
+				return marker
 			}
 			buffer = buffer[1:]
 			buffer += string(r)
 		}
 		marker++
 	}
+	return -1
 }
 
 func isMarker(buffer string) bool {
