@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -27,9 +28,6 @@ func main() {
 		output := strings.Split(scanner.Text(), " ")
 		switch output[0] {
 		case "$":
-			//fmt.Printf("%s : %d\n", currDir, dirMap[currDir])
-
-			//fmt.Println(scanner.Text())
 			if output[1] == "cd" {
 				if output[2] == ".." {
 					dirs := strings.Split(currDir, "/")
@@ -51,42 +49,59 @@ func main() {
 				panic("unknown command")
 			}
 		case "dir":
-			if _, exists := dirMap[output[1]]; !exists {
-				//dirMap[output[1]] = 0
-			}
 		default:
 			size, _ := strconv.Atoi(output[0])
 			addFileSizeToFolders(size)
 		}
 	}
 
-	solution := 0
+	solution1 := 0
+
+	used := dirMap["/"]
+	total := 70_000_000
+	unused := total - used
+	needed := 30_000_000
+	candidates := make([]int, 0)
+
 	for _, v := range dirMap {
-		//fmt.Printf("%s -> %d\n", k, v)
 		if v <= 100000 {
-			solution += v
+			solution1 += v
+		}
+		if unused+v >= needed {
+			candidates = append(candidates, v)
 		}
 	}
-	fmt.Println(solution)
+
+	sort.Ints(candidates)
+
+	fmt.Println(solution1)
+	fmt.Println(candidates[0])
 }
 
 func addFileSizeToFolders(size int) {
-	// add filesize to current folder
 	dirMap[currDir] += size
+
+	if currDir == "/" {
+		return
+	}
 	// add filesize to all previous folders
 	dirs := strings.Split(currDir, "/")
 	curr := "/"
 	for _, d := range dirs {
+		if d == "" {
+			dirMap["/"] += size
+			continue
+		}
+		if curr == "/" {
+			curr += d
+		} else {
+			curr += "/" + d
+		}
 		if curr == currDir {
 			break
 		}
 
 		dirMap[curr] += size
 
-		if curr == "/" {
-			curr += d
-		} else {
-			curr += "/" + d
-		}
 	}
 }
