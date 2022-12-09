@@ -32,12 +32,18 @@ func main() {
 	}
 
 	solution1 := 0
+	solution2 := 0
 	for i, hor := range forest {
 		for j := range hor {
 			solution1 += visible(i, j)
+			score := calculateScenicScore(i,j)
+			if score > solution2 {
+				solution2 = score
+			}
 		}
 	}
 	fmt.Println(solution1)
+	fmt.Println(solution2)
 }
 
 func visible(i, j int) int {
@@ -88,4 +94,68 @@ func visibleVertical(xIndex, yIndex int) bool {
 		}
 	}
 	return visibleUp || visibleDown
+}
+
+func calculateScenicScore(xIndex, yIndex int) int {
+	height := forest[yIndex][xIndex]
+
+	var scUp, scDown, scLeft, scRight int
+
+	// left
+	if xIndex >= 1 {
+		for i := xIndex - 1; i >= 0; i-- {
+			scLeft = xIndex - i
+			if forest[yIndex][i] >= height {
+				break
+			}
+		}
+	} else {
+		if xIndex > 0 {
+			scLeft = 1
+		}
+	}
+
+	// right
+	if xIndex < forestSize-2 {
+		for i := xIndex + 1; i <= forestSize -1 ; i++ {
+			scRight = i - xIndex
+			if forest[yIndex][i] >= height {
+				break
+			}
+		}
+	} else {
+		if xIndex < forestSize-1 {
+			scRight = 1
+		}
+	}
+
+	// up
+	if yIndex >= 1 {
+		for i := yIndex - 1; i >= 0; i-- {
+			scUp = yIndex - i
+			if forest[i][xIndex] >= height {
+				break
+			}
+		}
+	} else {
+		if yIndex > 0 {
+			scUp = 1
+		}
+	}
+
+	// down
+	if yIndex <= forestSize-2 {
+		for i := yIndex + 1; i <= forestSize -1; i++ {
+			scDown = i - yIndex
+			if forest[i][xIndex] >= height {
+				break
+			}
+		}
+	} else {
+		if yIndex < forestSize -1 {
+			scDown = 1
+		}
+	}
+
+	return scUp * scDown * scLeft * scRight
 }
